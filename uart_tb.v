@@ -1,3 +1,10 @@
+/**
+  * UART component block test bench
+  */
+
+`timescale 1ns/1ps
+
+
 module test();
   reg clk = 0;
   reg uart_rx = 1;

@@ -13,6 +13,9 @@ uart_sim:
 	iverilog -o sim_uart uart.v uart_tb.v
 	vvp sim_uart
 
+uart_wave:
+	gtkwave uart.vcd
+
 flash:
 	openFPGALoader -v -b tangnano9k pack.fs
 
