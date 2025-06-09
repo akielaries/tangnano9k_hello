@@ -3,16 +3,19 @@ module test();
   reg uart_rx = 1;
   wire uart_tx;
   wire [5:0] led;
-  reg btn = 1;
+  reg enable_tx = 0;
+  reg [7:0] tx_data = 0;
+  wire tx_done;
 
-  uart #(8'd8) u(
-    clk,
-    uart_rx,
-    uart_tx,
-    led,
-    btn
+  uart #(.BAUD_DIV(234)) u (
+    .clk(clk),
+    .uart_rx(uart_rx),
+    .uart_tx(uart_tx),
+    .led(led),
+    .enable_tx(1'b0),     // or your testbench-controlled signal
+    .tx_data(8'b0),       // or your test data here
+    .tx_done()            // leave unconnected if not used
   );
-
   always
     #1  clk = ~clk;
 
@@ -29,8 +32,6 @@ module test();
     #16 uart_rx=1;
     #16 uart_rx=0;
     #16 uart_rx=1;
-    #4 btn=0;
-    #4 btn=1;
     #1000 $finish;
   end
 
