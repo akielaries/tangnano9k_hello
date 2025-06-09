@@ -1,0 +1,28 @@
+*# Build artifacts from Yosys synthesis
+*.json
+
+# nextpnr output
+*.asc
+*.blif
+*.bin
+*.fasm
+*.bit
+*.dcp
+*.pnr
+pnruart.json
+pnr*.json
+
+# Gowin Packager outputs
+*.fs
+
+# Simulation artifacts
+*.vcd
+*.vvp
+sim_uart
+
+# General backup / swap / temp files
+*~
+*.swp
+*.bak
+*.tmp
+
