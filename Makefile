@@ -1,5 +1,5 @@
 blink:
-	yosys -D LEDS_NR=6 -p "read_verilog blinky2.v; synth_gowin -json blinky.json"
+	yosys -D LEDS_NR=6 -p "read_verilog blinky.v; synth_gowin -json blinky.json"
 	nextpnr-himbaechel --json blinky.json --write pnrblinky.json --device GW1NR-LV9QN88PC6/I5 --vopt family=GW1N-9C --vopt cst=tangnano9k.cst
 	gowin_pack -d GW1N-9C -o pack.fs pnrblinky.json
 

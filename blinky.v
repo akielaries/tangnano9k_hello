@@ -1,37 +1,47 @@
-module top (
-	// Clock input
-	input clk,
-	// Input from a key or button for controlling the blinking rate
-	input key,
-
-	// Output to control LEDs
-	output [`LEDS_NR-1:0] led
+module led (
+  input sys_clk,          // 27 MHz clock input
+  input sys_rst_n,        // active-low reset input
+  output reg red_led,
+  output reg [5:0] led    // 6-bit output driving LED pins
 );
 
-// Register to hold the current count value
-//reg [25:0] ctr_q;
-reg [28:0] ctr_q;
+reg [23:0] led_counter;       // LED shifting counter
+reg [24:0] red_led_counter;   // Red LED blinking counter
 
-// Wire to calculate the next count value
-//wire [25:0] ctr_d;
-wire [28:0] ctr_d;
+// LED and red_led counter logic
+always @(posedge sys_clk or negedge sys_rst_n) begin
+  if (!sys_rst_n) begin
+    led_counter <= 24'd0;
+    red_led_counter <= 25'd0;
+  end else begin
+    // increment both independently
+    if (led_counter < 24'd674_9999)
+      led_counter <= led_counter + 1'd1;
+    else
+      led_counter <= 24'd0;
 
-// Sequential code (flip-flop)
-always @(posedge clk) begin
-	if (key) begin
-		// Update the count value on positive edge of the clock if the key is pressed
-		ctr_q <= ctr_d;
-	end
+    if (red_led_counter < 25'd13_499_999)  // e.g., 1s blink
+      red_led_counter <= red_led_counter + 1'd1;
+    else
+      red_led_counter <= 25'd0;
+  end
 end
 
-// Combinational code (boolean logic)
+// LED shifting and red_led blinking logic
+always @(posedge sys_clk or negedge sys_rst_n) begin
+  if (!sys_rst_n) begin
+    led <= 6'b111110;
+    red_led <= 1'b0;
+  end else begin
+    // Shift the LED bits when led_counter hits max
+    if (led_counter == 24'd674_9999)
+      led <= {led[4:0], led[5]};
 
-// increment count by 1
-assign ctr_d = ctr_q + 1'b1;
-
-// Drive LED outputs based on the most significant bit of the count value
-// This effectively divides the clock frequency by 2^(`LEDS_NR), causing LEDs to blink at a slower rate
-//assign led = ctr_q[25:25-(`LEDS_NR - 1)];
-assign led = ctr_q[28:28-(`LEDS_NR - 1)];
+    // Toggle red_led when red_led_counter hits max
+    if (red_led_counter == 25'd13_499_999)
+      red_led <= ~red_led;
+  end
+end
 
 endmodule
+
